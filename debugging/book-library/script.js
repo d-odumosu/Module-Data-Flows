@@ -1,10 +1,17 @@
-let myLibrary = [];
+const myLibrary = [];
+const titleInput = document.getElementById("title");
+const authorInput = document.getElementById("author");
+const pagesInput = document.getElementById("pages");
+const checkInput = document.getElementById("check");
+const tableBody = document.querySelector("tbody");
+const submitButton = document.querySelector('input[type="submit"]');
 
 window.addEventListener("load", function () {
   populateStorage();
   render();
 });
 
+submitButton.addEventListener("click", handleSubmit);
 function Book(title, author, pages, check) {
   this.title = title;
   this.author = author;
@@ -20,36 +27,24 @@ function populateStorage() {
       127,
       true
     );
-    myLibrary.push(book1);
-    myLibrary.push(book2);
+    myLibrary.push(book1, book2);
   }
 }
+function handleSubmit() {
+  const title = titleInput.value.trim();
+  const author = authorInput.value.trim();
+  const pages = Number(pagesInput.value);
+  const check = checkInput.checked;
 
-const titleInput = document.getElementById("title");
-const authorInput = document.getElementById("author");
-const pagesInput = document.getElementById("pages");
-const checkInput = document.getElementById("check");
-
-function submit() {
-  if (
-    titleInput.value.trim() === "" ||
-    pagesInput.value.trim() === "" ||
-    authorInput.value.trim() === ""
-  ) {
+  if (title === "" || author === "" || !Number.isInteger(pages) || pages < 1) {
     alert("Please fill all fields!");
     return false;
   } else {
-    let book = new Book(
-      titleInput.value,
-      authorInput.value,
-      Number(pagesInput.value),
-      checkInput.checked
-    );
+    const book = new Book(title, author, pages, check);
     myLibrary.push(book);
     render();
   }
 }
-
 function render() {
   //delete old table
   tableBody.innerHTML = "";
@@ -58,9 +53,6 @@ function render() {
     createBookRow(book, i);
   });
 }
-
-const tableBody = document.querySelector("tbody");
-let readStatus;
 
 function createBookRow(book, index) {
   const changeBtn = document.createElement("button");
@@ -80,22 +72,19 @@ function createBookRow(book, index) {
   deleteCell.appendChild(deleteBtn);
   deleteBtn.textContent = "Delete";
   changeBtn.className = "btn btn-success";
-
   deleteBtn.className = "btn btn-warning";
 
-  if (!book.check) {
-    readStatus = "No";
-  } else {
-    readStatus = "Yes";
-  }
-  changeBtn.innerText = readStatus;
+  changeBtn.innerText = book.check ? "yes" : "No";
+
   changeBtn.addEventListener("click", function () {
     book.check = !book.check;
     render();
   });
   deleteBtn.addEventListener("click", function () {
-    alert(`You've deleted title: ${book.title}`);
     myLibrary.splice(index, 1);
     render();
+    setTimeout(function () {
+      alert(`You've deleted title: ${book.title}`);
+    }, 0);
   });
 }
