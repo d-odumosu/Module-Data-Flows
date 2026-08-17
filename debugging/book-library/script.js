@@ -3,15 +3,16 @@ const titleInput = document.getElementById("title");
 const authorInput = document.getElementById("author");
 const pagesInput = document.getElementById("pages");
 const checkInput = document.getElementById("check");
-const tableBody = document.querySelector("tbody");
+const tableBody = document.getElementById("display");
 const submitButton = document.querySelector('input[type="submit"]');
 
-window.addEventListener("load", function () {
+window.addEventListener("load", setUp);
+function setUp() {
   populateStorage();
   render();
-});
+  submitButton.addEventListener("click", handleSubmit);
+}
 
-submitButton.addEventListener("click", handleSubmit);
 function Book(title, author, pages, check) {
   this.title = title;
   this.author = author;
@@ -30,7 +31,9 @@ function populateStorage() {
     myLibrary.push(book1, book2);
   }
 }
-function handleSubmit() {
+
+function handleSubmit(event) {
+  event.preventDefault();
   const title = titleInput.value.trim();
   const author = authorInput.value.trim();
   const pages = Number(pagesInput.value);
@@ -45,6 +48,7 @@ function handleSubmit() {
     render();
   }
 }
+
 function render() {
   //delete old table
   tableBody.innerHTML = "";
